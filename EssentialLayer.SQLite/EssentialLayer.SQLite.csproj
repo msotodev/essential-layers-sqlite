@@ -13,6 +13,10 @@
     <PackageProjectUrl>https://essentiallayers.dev</PackageProjectUrl>
     <PackageIcon>essential-layers.png</PackageIcon>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/MatProgrammerSM/EssentialLayers</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>SQLite, Database, Local</PackageTags>
+    <PackageReleaseNotes> - feat: </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

@@ -22,5 +22,7 @@ namespace EssentialLayer.SQLite.Interfaces
 		ResultHelper<T> Update<T>(T data) where T : new();
 
 		Response Export();
-	}
+
+        int Version { get; }
+    }
 }

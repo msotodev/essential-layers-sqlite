@@ -6,6 +6,8 @@ using SQLite;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace EssentialLayer.SQLite.Services
 {
@@ -38,6 +40,8 @@ namespace EssentialLayer.SQLite.Services
 			}
 			catch (Exception e)
 			{
+				Error(e.Message);
+
 				return Response.Fail(e.Message);
 			}
 		}
@@ -52,6 +56,8 @@ namespace EssentialLayer.SQLite.Services
 			}
 			catch (Exception e)
 			{
+				Error(e.Message);
+
 				return Response.Fail(e.Message);
 			}
 		}
@@ -67,6 +73,8 @@ namespace EssentialLayer.SQLite.Services
 			}
 			catch (Exception e)
 			{
+				Error(e.Message);
+
 				return Response.Fail(e.Message);
 			}
 		}
@@ -84,6 +92,8 @@ namespace EssentialLayer.SQLite.Services
 			}
 			catch (Exception e)
 			{
+				Error(e.Message);
+
 				return Response.Fail(e.Message);
 			}
 		}
@@ -101,6 +111,8 @@ namespace EssentialLayer.SQLite.Services
 			}
 			catch (Exception e)
 			{
+				Error(e.Message);
+
 				return ResultHelper<T>.Fail(e);
 			}
 		}
@@ -118,6 +130,8 @@ namespace EssentialLayer.SQLite.Services
 			}
 			catch (Exception e)
 			{
+				Error(e.Message);
+
 				return Response.Fail(e.Message);
 			}
 		}
@@ -135,6 +149,8 @@ namespace EssentialLayer.SQLite.Services
 			}
 			catch (Exception e)
 			{
+				Error(e.Message);
+
 				return Response.Fail(e.Message);
 			}
 		}
@@ -152,6 +168,8 @@ namespace EssentialLayer.SQLite.Services
 			}
 			catch (Exception e)
 			{
+				Error(e.Message);
+
 				return ResultHelper<T>.Fail(e.Message);
 			}
 		}
@@ -169,10 +187,39 @@ namespace EssentialLayer.SQLite.Services
 			}
 			catch (Exception e)
 			{
+				Error(e.Message);
+
 				return Response.Fail(e.Message);
 			}
 		}
 
-		private void Log(string message) => _logger.LogInformation($"\n{message}\n");
+		public int Version
+		{
+			get
+			{
+				try
+				{
+					return _connection.Query<int>("PRAGMA user_version;").FirstOrDefault();
+				}
+				catch (Exception e)
+				{
+					_logger.LogError(e.Message);
+
+					return 0;
+				}
+			}
+		}
+
+		private void Error(
+			string message,
+			[CallerMemberName] string memberName = nameof(SQLite)
+		) => _logger.LogError(
+			$"{memberName} Error: \n{message}\n"
+		);
+
+		private void Log(
+			string message,
+			[CallerMemberName] string memberName = nameof(SQLite)
+		) => _logger.LogInformation($"{memberName} Info: \n{message}\n");
 	}
 }
