@@ -15,9 +15,9 @@ namespace EssentialLayer.SQLite.Services
 	{
 		private readonly ILogger _logger;
 
-		private readonly SQLiteConnection _connection;
-
 		private readonly string? _databasePath;
+
+		private SQLiteConnection _connection;
 
 		public DatabaseService(
 			ILogger<DatabaseService> logger,
@@ -144,6 +144,8 @@ namespace EssentialLayer.SQLite.Services
 				_connection.Dispose();
 
 				if (File.Exists(_databasePath)) File.Delete(_databasePath);
+
+				_connection = new SQLiteConnection(_databasePath);
 
 				return Response.Success();
 			}
