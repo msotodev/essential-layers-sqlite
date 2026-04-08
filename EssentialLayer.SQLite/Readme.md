@@ -19,6 +19,7 @@ services.AddSQLiteInstance(
 ```
 
 #### Release Notes
+ - feat: Re-open connection on Reset database `07-04-2026`
  - feat: Log and Error messages + New version property in both interfaces `10-03-2026`
 
 Created by [Mario Soto Moreno](https://github.com/msotodev)
