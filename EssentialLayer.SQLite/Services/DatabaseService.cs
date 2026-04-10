@@ -102,10 +102,10 @@ namespace EssentialLayer.SQLite.Services
 		{
 			try
 			{
-				int affectedRows = _connection.Execute(query, args);
+				int affectedRows = _connection.Execute(script, args);
 
 				_logger.LogInformation(
-					$"Executed query: {query} with args: {string.Join(", ", args)}. Affected rows: {affectedRows}"
+					$"Executed script: {script} with args: {string.Join(", ", args)}. Affected rows: {affectedRows}"
 				);
 
 				return Response.Success();
