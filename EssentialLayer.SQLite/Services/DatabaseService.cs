@@ -98,6 +98,26 @@ namespace EssentialLayer.SQLite.Services
 			}
 		}
 
+		public Response Execute(string script, params object[] args)
+		{
+			try
+			{
+				int affectedRows = _connection.Execute(query, args);
+
+				_logger.LogInformation(
+					$"Executed query: {query} with args: {string.Join(", ", args)}. Affected rows: {affectedRows}"
+				);
+
+				return Response.Success();
+			}
+			catch (Exception e)
+			{
+				Error(e.Message);
+
+				return Response.Fail(e.Message);
+			}
+		}
+
 		public ResultHelper<T> New<T>(T data) where T : new()
 		{
 			try

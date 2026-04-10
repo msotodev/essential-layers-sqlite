@@ -13,6 +13,8 @@ namespace EssentialLayer.SQLite.Interfaces
 
 		Response Drop<T>();
 
+		Response Execute(string script, params object[] args);
+
 		ResultHelper<T> New<T>(T data) where T : new();
 
 		Response BulkInsert<T>(IEnumerable<T> data);
