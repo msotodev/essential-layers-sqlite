@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
-    <Version>1.2.0</Version>
+    <Version>1.3.0</Version>
     <Authors>MSoto</Authors>
     <Title>$(AssemblyName)</Title>
     <Company>Mario Soto Moreno Co</Company>
@@ -16,7 +16,8 @@
     <RepositoryUrl>https://github.com/msotodev/essential-layers-sqlite</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>SQLite, Database, Local</PackageTags>
-    <PackageReleaseNotes> - feat: Re-open connection on Reset database `07-04-2026`</PackageReleaseNotes>
+    <PackageReleaseNotes> - feat: Query Support in query database service by query string and optional parameters `10-04-2026`
+ - feat: Execute Support in database service by script and optional parameters `10-04-2026`</PackageReleaseNotes>
     <PackAsTool>False</PackAsTool>
   </PropertyGroup>
 
