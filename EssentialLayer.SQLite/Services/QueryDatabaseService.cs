@@ -24,6 +24,22 @@ namespace EssentialLayer.SQLite.Services
 			_connection = new SQLiteConnection(databasePath);
 		}
 
+		public string Query(string query, params object[] args)
+		{
+			try
+			{
+				Log($"Executing query: {query} with arguments: {string.Join(", ", args)}");
+
+				return _connection.ExecuteScalar<string>(query, args);
+			}
+			catch (Exception e)
+			{
+				Error(e.Message);
+
+				return string.Empty;
+			}
+		}
+
 		public IReadOnlyList<T> Query<T>(string query, params object[] args) where T : class, new()
 		{
 			try
