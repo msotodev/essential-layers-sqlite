@@ -19,9 +19,19 @@ services.AddSQLiteInstance(
 ```
 
 #### Release Notes
+
+##### v1.4.0
+ - feat: Support to async database and query services `15-04-2026`
+ - refactor: New extensions asbtraction of ILogger `15-04-2026`
+
+##### v1.3.0
  - feat: Query Support in query database service by query string and optional parameters `10-04-2026`
  - feat: Execute Support in database service by script and optional parameters `10-04-2026`
+
+##### v1.2.0
  - feat: Re-open connection on Reset database `07-04-2026`
+
+##### v1.1.0
  - feat: Log and Error messages + New version property in both interfaces `10-03-2026`
 
 Created by [Mario Soto Moreno](https://github.com/msotodev)
