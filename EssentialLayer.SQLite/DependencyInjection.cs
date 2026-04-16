@@ -22,9 +22,23 @@ namespace EssentialLayer.SQLite
 				)
 			);
 
+			services.AddKeyedScoped<IAsyncDatabaseService>(databaseName, (provider, _) =>
+				new AsyncDatabaseService(
+					provider.GetRequiredService<ILogger<AsyncDatabaseService>>(),
+					databasePathFactory(provider)
+				)
+			);
+
 			services.AddKeyedScoped<IQueryDatabaseService>(databaseName, (provider, _) =>
 				new QueryDatabaseService(
 					provider.GetRequiredService<ILogger<QueryDatabaseService>>(),
+					databasePathFactory(provider)
+				)
+			);
+
+			services.AddKeyedScoped<IAsyncQueryDatabase>(databaseName, (provider, _) =>
+				new AsyncQueryDatabaseService(
+					provider.GetRequiredService<ILogger<AsyncQueryDatabaseService>>(),
 					databasePathFactory(provider)
 				)
 			);
@@ -56,6 +70,23 @@ namespace EssentialLayer.SQLite
 				);
 			});
 
+			services.AddKeyedScoped<IAsyncDatabaseService>(databaseName, (provider, _) =>
+			{
+				string targetPath = targetPathFactory(provider);
+
+				if (!File.Exists(targetPath))
+				{
+					using Stream source = rawStreamFactory();
+					using FileStream dest = File.Create(targetPath);
+					source.CopyTo(dest);
+				}
+
+				return new AsyncDatabaseService(
+					provider.GetRequiredService<ILogger<AsyncDatabaseService>>(),
+					targetPath
+				);
+			});
+
 			services.AddKeyedScoped<IQueryDatabaseService>(databaseName, (provider, _) =>
 			{
 				string targetPath = targetPathFactory(provider);
@@ -69,6 +100,23 @@ namespace EssentialLayer.SQLite
 
 				return new QueryDatabaseService(
 					provider.GetRequiredService<ILogger<QueryDatabaseService>>(),
+					targetPath
+				);
+			});
+
+			services.AddKeyedScoped<IAsyncQueryDatabase>(databaseName, (provider, _) =>
+			{
+				string targetPath = targetPathFactory(provider);
+
+				if (!File.Exists(targetPath))
+				{
+					using Stream source = rawStreamFactory();
+					using FileStream dest = File.Create(targetPath);
+					source.CopyTo(dest);
+				}
+
+				return new AsyncQueryDatabaseService(
+					provider.GetRequiredService<ILogger<AsyncQueryDatabaseService>>(),
 					targetPath
 				);
 			});

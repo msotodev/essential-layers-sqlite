@@ -1,4 +1,5 @@
-﻿using EssentialLayer.SQLite.Interfaces;
+﻿using EssentialLayer.SQLite.Extensions;
+using EssentialLayer.SQLite.Interfaces;
 using EssentialLayers.Helpers.Extension;
 using EssentialLayers.Helpers.Result;
 using Microsoft.Extensions.Logging;
@@ -6,8 +7,6 @@ using SQLite;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace EssentialLayer.SQLite.Services
 {
@@ -36,11 +35,13 @@ namespace EssentialLayer.SQLite.Services
 			{
 				_connection.CreateTable<T>();
 
+				_logger.LogInfo($"Created table at {typeof(T).Name}");
+
 				return Response.Success();
 			}
 			catch (Exception e)
 			{
-				Error(e.Message);
+				_logger.LogErrorEx(e);
 
 				return Response.Fail(e.Message);
 			}
@@ -56,7 +57,7 @@ namespace EssentialLayer.SQLite.Services
 			}
 			catch (Exception e)
 			{
-				Error(e.Message);
+				_logger.LogErrorEx(e);
 
 				return Response.Fail(e.Message);
 			}
@@ -66,14 +67,15 @@ namespace EssentialLayer.SQLite.Services
 		{
 			try
 			{
-				string tableName = typeof(T).Name;
 				int inserted = _connection.DeleteAll<T>();
+
+				_logger.LogInfo($"Deleted all rows at {typeof(T).Name}: {inserted} rows");
 
 				return Response.Success();
 			}
 			catch (Exception e)
 			{
-				Error(e.Message);
+				_logger.LogErrorEx(e);
 
 				return Response.Fail(e.Message);
 			}
@@ -84,15 +86,14 @@ namespace EssentialLayer.SQLite.Services
 			try
 			{
 				int dropped = _connection.DropTable<T>();
-				string tableName = typeof(T).Name;
 
-				Log($"Droped {dropped} row at {tableName}");
+				_logger.LogInfo($"Droped {dropped} row at {typeof(T).Name}");
 
 				return Response.Success();
 			}
 			catch (Exception e)
 			{
-				Error(e.Message);
+				_logger.LogErrorEx(e);
 
 				return Response.Fail(e.Message);
 			}
@@ -112,7 +113,7 @@ namespace EssentialLayer.SQLite.Services
 			}
 			catch (Exception e)
 			{
-				Error(e.Message);
+				_logger.LogErrorEx(e);
 
 				return Response.Fail(e.Message);
 			}
@@ -123,15 +124,14 @@ namespace EssentialLayer.SQLite.Services
 			try
 			{
 				int inserted = _connection.Insert(data);
-				string tableName = typeof(T).Name;
 
-				Log($"New row at {tableName}: {data.Serialize()}");
+				_logger.LogInfo($"New row at {typeof(T).Name}: {data.Serialize()}");
 
 				return ResultHelper<T>.Success(data);
 			}
 			catch (Exception e)
 			{
-				Error(e.Message);
+				_logger.LogErrorEx(e);
 
 				return ResultHelper<T>.Fail(e);
 			}
@@ -142,15 +142,14 @@ namespace EssentialLayer.SQLite.Services
 			try
 			{
 				int inserted = _connection.InsertAll(data);
-				string tableName = typeof(T).Name;
 
-				Log($"Bulked from {tableName}: {inserted} rows");
+				_logger.LogInfo($"Bulked from {typeof(T).Name}: {inserted} rows");
 
 				return Response.Success();
 			}
 			catch (Exception e)
 			{
-				Error(e.Message);
+				_logger.LogErrorEx(e);
 
 				return Response.Fail(e.Message);
 			}
@@ -161,17 +160,18 @@ namespace EssentialLayer.SQLite.Services
 			try
 			{
 				_connection.Close();
-				_connection.Dispose();
 
 				if (File.Exists(_databasePath)) File.Delete(_databasePath);
 
 				_connection = new SQLiteConnection(_databasePath);
 
+				_logger.LogInfo($"Database reseted at {_databasePath}");
+
 				return Response.Success();
 			}
 			catch (Exception e)
 			{
-				Error(e.Message);
+				_logger.LogErrorEx(e);
 
 				return Response.Fail(e.Message);
 			}
@@ -184,13 +184,13 @@ namespace EssentialLayer.SQLite.Services
 				int inserted = _connection.Update(data);
 				string tableName = typeof(T).Name;
 
-				Log($"Updated row at {tableName}: {data.Serialize()}");
+				_logger.LogInfo($"Updated row at {tableName}: {data.Serialize()}");
 
 				return ResultHelper<T>.Success(data);
 			}
 			catch (Exception e)
 			{
-				Error(e.Message);
+				_logger.LogErrorEx(e);
 
 				return ResultHelper<T>.Fail(e.Message);
 			}
@@ -205,43 +205,16 @@ namespace EssentialLayer.SQLite.Services
 
 				_connection.Backup(_databasePath, databaseName);
 
+				_logger.LogInfo($"Database exported to {Path.Combine(_databasePath, databaseName)}");
+
 				return Response.Success();
 			}
 			catch (Exception e)
 			{
-				Error(e.Message);
+				_logger.LogErrorEx(e);
 
 				return Response.Fail(e.Message);
 			}
 		}
-
-		public int Version
-		{
-			get
-			{
-				try
-				{
-					return _connection.Query<int>("PRAGMA user_version;").FirstOrDefault();
-				}
-				catch (Exception e)
-				{
-					_logger.LogError(e.Message);
-
-					return 0;
-				}
-			}
-		}
-
-		private void Error(
-			string message,
-			[CallerMemberName] string memberName = nameof(SQLite)
-		) => _logger.LogError(
-			$"{memberName} Error: \n{message}\n"
-		);
-
-		private void Log(
-			string message,
-			[CallerMemberName] string memberName = nameof(SQLite)
-		) => _logger.LogInformation($"{memberName} Info: \n{message}\n");
 	}
 }

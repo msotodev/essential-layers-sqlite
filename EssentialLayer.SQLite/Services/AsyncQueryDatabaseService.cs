@@ -5,48 +5,49 @@ using SQLite;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace EssentialLayer.SQLite.Services
 {
-	internal class QueryDatabaseService : IQueryDatabaseService
+	internal class AsyncQueryDatabaseService : IAsyncQueryDatabase
 	{
 		private readonly ILogger _logger;
 
-		private readonly SQLiteConnection _connection;
+		private readonly SQLiteAsyncConnection _connection;
 
-		public QueryDatabaseService(
-			ILogger<QueryDatabaseService> logger,
+		public AsyncQueryDatabaseService(
+			ILogger<AsyncQueryDatabaseService> logger,
 			string databasePath
 		)
 		{
 			_logger = logger;
 
-			_connection = new SQLiteConnection(databasePath);
+			_connection = new SQLiteAsyncConnection(databasePath);
 		}
 
-		public string Query(string query, params object[] args)
+		public Task<string> QueryAsync(string query, params object[] args)
 		{
 			try
 			{
 				_logger.LogInfo($"Executing query: {query} with arguments: {string.Join(", ", args)}");
 
-				return _connection.ExecuteScalar<string>(query, args);
+				return _connection.ExecuteScalarAsync<string>(query, args);
 			}
 			catch (Exception e)
 			{
 				_logger.LogErrorEx(e);
 
-				return string.Empty;
+				return Task.FromResult(string.Empty);
 			}
 		}
 
-		public IReadOnlyList<T> Query<T>(string query, params object[] args) where T : class, new()
+		public async Task<IReadOnlyList<T>> QueryAsync<T>(string query, params object[] args) where T : class, new()
 		{
 			try
 			{
 				_logger.LogInfo($"Executing query: {query} with arguments: {string.Join(", ", args)}");
 
-				List<T> list = _connection.Query<T>(query, args);
+				List<T> list = await _connection.QueryAsync<T>(query, args);
 
 				return list;
 			}
@@ -58,13 +59,13 @@ namespace EssentialLayer.SQLite.Services
 			}
 		}
 
-		public T? QueryFirst<T>(string query, params object[] args) where T : class, new()
+		public async Task<T?> QueryFirstsync<T>(string query, params object[] args) where T : class, new()
 		{
 			try
 			{
 				_logger.LogInfo($"Executing query: {query} with arguments: {string.Join(", ", args)}");
 
-				List<T> list = _connection.Query<T>(query, args);
+				List<T> list = await _connection.QueryAsync<T>(query, args);
 
 				return list.FirstOrDefault();
 			}
